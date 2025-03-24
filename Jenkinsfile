@@ -22,24 +22,20 @@ pipeline {
                 }    
             }
         }
-      
-        stage('Test') {
+        stage('Install Dependencies') {
             steps {
-                sh 'echo This is test'
-                sh 'env'
+                sh 'npm install'
             }
         }
-        stage('Deploy') {
-            when {
-                expression { env.GIT_BRANCH == "origin/main" }  // env.GIT_BRANCH == "origin/main" ...>will not deploy work
-            }
+        stage('Docker build') {
             steps {
-
-                    sh 'echo This is deploy'
-                    //error 'pipeline failed'
-
+                sh """
+                docker build - ramak8sgcp/backend:${appVersion}
+                docker images
+                """ 
             }
         }
+        
         stage('Print Params'){
             steps{
                 echo "Hello ${params.PERSON}"
@@ -49,14 +45,14 @@ pipeline {
                 echo "Password: ${params.PASSWORD}"   
             }
         }
-        stage('Approval'){
-            input {
-                message "Should we continue?"
-                ok "Yes, we should."
-                submitter "alice,bob"
-                parameters {
-                    string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
-                }
+        // stage('Approval'){
+        //     input {
+        //         message "Should we continue?"
+        //         ok "Yes, we should."
+        //         submitter "alice,bob"
+        //         parameters {
+        //             string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
+        //         }
             }
             steps {
                 echo "Hello, ${PERSON}, nice to meet you."
