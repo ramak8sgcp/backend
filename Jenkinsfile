@@ -30,7 +30,7 @@ pipeline {
         stage('Docker build') {
             steps {
                 sh """
-                docker build - ramak8sgcp/backend:${appVersion}
+                docker build -t ramak8sgcp/backend:${appVersion}
                 docker images
                 """ 
             }
