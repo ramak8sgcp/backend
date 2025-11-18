@@ -58,7 +58,7 @@ pipeline {
                 echo "Hello, ${PERSON}, nice to meet you."
             }
         }
-    }
+
 
     post {
         always{
