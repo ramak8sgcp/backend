@@ -2,59 +2,53 @@ pipeline {
     agent {
         label 'AGENT-1'
     }
-
-    options {
+    options{
         timeout(time: 30, unit: 'MINUTES')
         disableConcurrentBuilds()
+        //retry(1)
     }
-
     environment {
         DEBUG = 'true'
-        appVersion = ''  // global variable
+        appVersion = '' // this will become global, we can use across pipeline
     }
 
     stages {
-
         stage('Read the version') {
             steps {
-                script {
+                script{
                     def packageJson = readJSON file: 'package.json'
                     appVersion = packageJson.version
                     echo "App version: ${appVersion}"
-                }
+                }    
             }
         }
-
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
             }
         }
-
         stage('Docker build') {
             steps {
                 sh """
-                    docker build -t ramak8sgcp/backend:${appVersion} .
-                    docker images
-                """
+                docker build -t ramak8sgcp/backend:${appVersion}
+                docker images
+                """ 
             }
         }
-
-        stage('Print Params') {
-            steps {
+        
+        stage('Print Params'){
+            steps{
                 echo "Hello ${params.PERSON}"
                 echo "Biography: ${params.BIOGRAPHY}"
                 echo "Toggle: ${params.TOGGLE}"
                 echo "Choice: ${params.CHOICE}"
-                echo "Password: ${params.PASSWORD}"
+                echo "Password: ${params.PASSWORD}"   
             }
         }
-
-        stage('Approval') {
-            when { expression { return true } }  
+        stage('Approval'){
             input {
                 message "Should we continue?"
-                ok "Yes, continue."
+                ok "Yes, we should."
                 submitter "alice,bob"
                 parameters {
                     string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
@@ -65,18 +59,17 @@ pipeline {
             }
         }
 
-    } // end of stages
 
     post {
-        always {
-            echo "This section runs always"
+        always{
+            echo "This sections runs always"
             deleteDir()
         }
-        success {
-            echo "This section runs on success"
+        success{
+            echo "This section run when pipeline success"
         }
-        failure {
-            echo "This section runs on failure"
+        failure{
+            echo "This section run when pipeline failure"
         }
     }
 }
