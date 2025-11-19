@@ -24,12 +24,12 @@ pipeline {
                 }
             }
         }
-        stage('Install Dependencies') {
-            steps {
-                sh "npm install"
+        // stage('Install Dependencies') {
+        //     steps {
+        //         sh "npm install"
                 
-            }
-        }
+        //     }
+        // }
         stage('Deploy') {
             when {
                 expression { env.GIT_BRANCH == "origin/main" }
