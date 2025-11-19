@@ -30,13 +30,13 @@ pipeline {
                 
             }
         }
-        stage('Deploy') {
-            when {
-                expression { env.GIT_BRANCH == "origin/main" }
-            }
+        stage('Docker build') {
+          
             steps {
-                sh "echo this is Deploy"
-                // error 'pipeline failed'
+                sh """
+                docker build -t ramak8sgcp/backend:${appVersion} .
+                docker images
+                """
             }
         }
     }
